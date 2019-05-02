@@ -8,10 +8,6 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
 
-/**
- * Created by SHAJIB-PC on 10/23/2017.
- */
-
 public class DetailsActivity extends AppCompatActivity {
     WebView webView;
     ProgressBar loader;

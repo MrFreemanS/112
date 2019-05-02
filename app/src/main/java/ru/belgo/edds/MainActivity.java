@@ -34,12 +34,15 @@ public class MainActivity extends AppCompatActivity
     ProgressBar loader;
     ArrayList<HashMap<String, String>> dataList = new ArrayList<HashMap<String, String>>();
 
-
-    static final String news_title = "title";
-    static final String news_txt = "description";
-    static final String KEY_URL = "url";
-    static final String KEY_URLTOIMAGE = "urlToImage";
-    static final String urlnews = "http://localhost:3012/news/";
+    static final String news_id = "news_id";
+    static final String news_title = "news_title";
+    static final String news_desc = "news_desc";
+    static final String news_url = "news_url";
+    static final String server_ip = "192.168.0.100";
+    static final String nodejs_path = "http://"+server_ip+":3012";
+    //static final String KEY_URL = "url";
+    //static final String KEY_URLTOIMAGE = "urlToImage";
+    static final String urlnews = nodejs_path+"/news/";
 
     class DownloadNews extends AsyncTask<String, Void, String> {
         @Override
@@ -50,29 +53,32 @@ public class MainActivity extends AppCompatActivity
         protected String doInBackground(String... args) {
             String xml = "";
 
-            String urlParameters = "http://localhost:3012/page/";
-            xml = Function.excuteGet("", urlParameters);
+            String urlParameters = nodejs_path +"/page/";
+            xml = Function.excuteGet(urlParameters);
             return  xml;
         }
 
         @Override
         protected void onPostExecute(String xml) {
 
-            if(xml.length()>10){ // Just checking if not empty
+            if(xml.length()>0){ // Just checking if not empty
 
                 try {
-                    JSONObject jsonResponse = new JSONObject(xml);
-                    JSONArray jsonArray = jsonResponse.optJSONArray("articles");
+                    //JSONObject jsonResponse = new JSONObject(xml);
+                    // JSONArray jsonArray = jsonResponse.optJSONArray("");
+
+                    JSONArray jsonArray = new JSONArray(xml);
+                   // JSONArray jsonArray = new JSONArray ();
 
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
                         HashMap<String, String> map = new HashMap<String, String>();
-
+                       // map.put(KEY_AUTHOR, jsonObject.optString(KEY_AUTHOR).toString());
                         map.put(news_title, jsonObject.optString(news_title).toString());
-                        map.put(news_txt, jsonObject.optString(news_txt).toString());
-
-                        map.put(KEY_URL, jsonObject.optString(KEY_URL).toString());
-                        map.put(KEY_URLTOIMAGE, jsonObject.optString(KEY_URLTOIMAGE).toString());
+                        map.put(news_desc, jsonObject.optString(news_desc).toString());
+                        map.put("news_url", nodejs_path+"/news/"+jsonObject.optString(news_id).toString());
+                       // map.put(KEY_URLTOIMAGE, jsonObject.optString(KEY_URLTOIMAGE).toString());
+                      //  map.put(KEY_PUBLISHEDAT, jsonObject.optString(KEY_PUBLISHEDAT).toString());
                         dataList.add(map);
                     }
                 } catch (JSONException e) {
@@ -84,9 +90,10 @@ public class MainActivity extends AppCompatActivity
 
                 listNews.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     public void onItemClick(AdapterView<?> parent, View view,
-                                            int position, long id) {
+                                            int position, long id)
+                    {
                         Intent i = new Intent(MainActivity.this, DetailsActivity.class);
-                        i.putExtra("url", dataList.get(+position).get(KEY_URL));
+                        i.putExtra("url",dataList.get(position).get(news_url));
                         startActivity(i);
                     }
                 });
@@ -121,6 +128,18 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        listNews = (ListView) findViewById(R.id.listNews);
+        loader = (ProgressBar) findViewById(R.id.loader_main);
+        listNews.setEmptyView(loader);
+
+        if(Function.isNetworkAvailable(getApplicationContext()))
+        {
+            DownloadNews newsTask = new DownloadNews();
+            newsTask.execute();
+        }else{
+            Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -133,12 +152,12 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
-    }
+    }*/
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

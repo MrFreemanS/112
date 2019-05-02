@@ -39,39 +39,40 @@ class ListNewsAdapter extends BaseAdapter {
             holder = new ListNewsViewHolder();
             convertView = LayoutInflater.from(activity).inflate(
                     R.layout.list_row, parent, false);
-            holder.galleryImage = (ImageView) convertView.findViewById(R.id.galleryImage);
+           // holder.galleryImage = (ImageView) convertView.findViewById(R.id.galleryImage);
             holder.title = (TextView) convertView.findViewById(R.id.title);
             holder.sdetails = (TextView) convertView.findViewById(R.id.sdetails);
-            holder.time = (TextView) convertView.findViewById(R.id.time);
+          //  holder.time = (TextView) convertView.findViewById(R.id.time);
             convertView.setTag(holder);
         } else {
             holder = (ListNewsViewHolder) convertView.getTag();
         }
-        holder.galleryImage.setId(position);
-        holder.author.setId(position);
+       // holder.galleryImage.setId(position);
+       // holder.author.setId(position);
         holder.title.setId(position);
-        holder.sdetails.setId(position);
-        holder.time.setId(position);
+       // holder.sdetails.setId(position);
+       // holder.time.setId(position);
 
         HashMap<String, String> song = new HashMap<String, String>();
         song = data.get(position);
 
         try{
 
-            holder.title.setText(song.get(MainActivity.KEY_TITLE));
+            holder.title.setText(song.get(MainActivity.news_title));
 
-            holder.sdetails.setText(song.get(MainActivity.KEY_DESCRIPTION));
+            holder.sdetails.setText(song.get(MainActivity.news_desc));
 
-            if(song.get(MainActivity.KEY_URLTOIMAGE).toString().length() < 5)
+            /*if(song.get(MainActivity.KEY_URLTOIMAGE).toString().length() < 5)
             {
                 holder.galleryImage.setVisibility(View.GONE);
             }else{
                /* Picasso.with(activity)
                         .load(song.get(MainActivity.KEY_URLTOIMAGE).toString())
                         .resize(300, 200)
-                        .into(holder.galleryImage);*/
-            }
+                        .into(holder.galleryImage);
+            }*/
         }catch(Exception e) {}
+
         return convertView;
     }
 }
