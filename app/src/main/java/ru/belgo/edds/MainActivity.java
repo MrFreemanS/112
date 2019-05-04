@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity
                        // map.put(KEY_AUTHOR, jsonObject.optString(KEY_AUTHOR).toString());
                         map.put(news_title, jsonObject.optString(news_title).toString());
                         map.put(news_desc, jsonObject.optString(news_desc).toString());
-                        map.put("news_url", nodejs_path+"/news/"+jsonObject.optString(news_id).toString());
+                        map.put("news_url", nodejs_path+"/news/"+jsonObject.optString(news_id)+"/news_txt".toString());
                        // map.put(KEY_URLTOIMAGE, jsonObject.optString(KEY_URLTOIMAGE).toString());
                       //  map.put(KEY_PUBLISHEDAT, jsonObject.optString(KEY_PUBLISHEDAT).toString());
                         dataList.add(map);
