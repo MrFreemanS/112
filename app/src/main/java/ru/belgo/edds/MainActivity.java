@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity
     static final String news_title = "news_title";
     static final String news_desc = "news_desc";
     static final String news_url = "news_url";
+    static final String news_date = "news_date";
+    static final String news_preview = "news_preview";
     static final String server_ip = "192.168.0.100";
     static final String nodejs_path = "http://"+server_ip+":3012";
     //static final String KEY_URL = "url";
@@ -73,12 +75,12 @@ public class MainActivity extends AppCompatActivity
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
                         HashMap<String, String> map = new HashMap<String, String>();
-                       // map.put(KEY_AUTHOR, jsonObject.optString(KEY_AUTHOR).toString());
+                        map.put(news_preview, jsonObject.optString(news_preview).toString());
                         map.put(news_title, jsonObject.optString(news_title).toString());
                         map.put(news_desc, jsonObject.optString(news_desc).toString());
-                        map.put("news_url", nodejs_path+"/news/"+jsonObject.optString(news_id)+"/news_txt".toString());
-                       // map.put(KEY_URLTOIMAGE, jsonObject.optString(KEY_URLTOIMAGE).toString());
-                      //  map.put(KEY_PUBLISHEDAT, jsonObject.optString(KEY_PUBLISHEDAT).toString());
+                        map.put(news_url, nodejs_path+"/news/"+jsonObject.optString(news_id)+"/news_txt".toString());
+                        map.put(news_date, jsonObject.optString(news_date).toString());
+
                         dataList.add(map);
                     }
                 } catch (JSONException e) {

@@ -39,10 +39,10 @@ class ListNewsAdapter extends BaseAdapter {
             holder = new ListNewsViewHolder();
             convertView = LayoutInflater.from(activity).inflate(
                     R.layout.list_row, parent, false);
-           // holder.galleryImage = (ImageView) convertView.findViewById(R.id.galleryImage);
+            holder.galleryImage = (ImageView) convertView.findViewById(R.id.galleryImage);
             holder.title = (TextView) convertView.findViewById(R.id.title);
             holder.sdetails = (TextView) convertView.findViewById(R.id.sdetails);
-          //  holder.time = (TextView) convertView.findViewById(R.id.time);
+            holder.time = (TextView) convertView.findViewById(R.id.time);
             convertView.setTag(holder);
         } else {
             holder = (ListNewsViewHolder) convertView.getTag();
@@ -62,15 +62,17 @@ class ListNewsAdapter extends BaseAdapter {
 
             holder.sdetails.setText(song.get(MainActivity.news_desc));
 
-            /*if(song.get(MainActivity.KEY_URLTOIMAGE).toString().length() < 5)
+            holder.time.setText(song.get(MainActivity.news_date));
+
+            if(song.get(MainActivity.news_preview).toString().length() < 0)
             {
                 holder.galleryImage.setVisibility(View.GONE);
             }else{
-               /* Picasso.with(activity)
-                        .load(song.get(MainActivity.KEY_URLTOIMAGE).toString())
+                Picasso.get()
+                        .load(song.get(MainActivity.news_preview).toString())
                         .resize(300, 200)
                         .into(holder.galleryImage);
-            }*/
+            }
         }catch(Exception e) {}
 
         return convertView;
