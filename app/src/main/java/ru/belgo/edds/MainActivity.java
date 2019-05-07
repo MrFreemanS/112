@@ -12,7 +12,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -40,7 +39,7 @@ public class MainActivity extends AppCompatActivity
     static final String news_url = "news_url";
     static final String news_date = "news_date";
     static final String news_preview = "news_preview";
-    static final String server_ip = "192.168.0.100";
+    static final String server_ip = "192.168.1.82";
     static final String nodejs_path = "http://"+server_ip+":3012";
     //static final String KEY_URL = "url";
     //static final String KEY_URLTOIMAGE = "urlToImage";
@@ -54,34 +53,30 @@ public class MainActivity extends AppCompatActivity
         }
         protected String doInBackground(String... args) {
             String xml = "";
-
-            String urlParameters = nodejs_path +"/page/";
-            xml = Function.excuteGet(urlParameters);
+            //TODO delete this
+           // String urlParameters = nodejs_path +"/news/";
+            xml = Function.excuteGet(urlnews);
             return  xml;
         }
 
         @Override
         protected void onPostExecute(String xml) {
 
-            if(xml.length()>0){ // Just checking if not empty
-
-                try {
-                    //JSONObject jsonResponse = new JSONObject(xml);
-                    // JSONArray jsonArray = jsonResponse.optJSONArray("");
-
+            if(xml.length()>0) // Just checking if not empty
+            {
+                try
+                {
                     JSONArray jsonArray = new JSONArray(xml);
-                   // JSONArray jsonArray = new JSONArray ();
-
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        HashMap<String, String> map = new HashMap<String, String>();
-                        map.put(news_preview, jsonObject.optString(news_preview).toString());
-                        map.put(news_title, jsonObject.optString(news_title).toString());
-                        map.put(news_desc, jsonObject.optString(news_desc).toString());
-                        map.put(news_url, nodejs_path+"/news/"+jsonObject.optString(news_id)+"/news_txt".toString());
-                        map.put(news_date, jsonObject.optString(news_date).toString());
-
-                        dataList.add(map);
+                    for (int i = 0; i < jsonArray.length(); i++)
+                    {
+                         JSONObject jsonObject = jsonArray.getJSONObject(i);
+                         HashMap<String, String> map = new HashMap<String, String>();
+                         map.put(news_preview, jsonObject.optString(news_preview).toString());
+                         map.put(news_title, jsonObject.optString(news_title).toString());
+                         map.put(news_desc, jsonObject.optString(news_desc).toString());
+                         map.put(news_url, nodejs_path+"/news/"+jsonObject.optString(news_id)+"/news_txt".toString());
+                         map.put(news_date, jsonObject.optString(news_date).toString());
+                         dataList.add(map);
                     }
                 } catch (JSONException e) {
                     Toast.makeText(getApplicationContext(), "Unexpected error", Toast.LENGTH_SHORT).show();
@@ -154,23 +149,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }*/
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        return super.onOptionsItemSelected(item);
-    }
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -178,7 +156,8 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-
+            Intent i = new Intent(MainActivity.this, AddIncActivity.class);
+            startActivity(i);
         }
          else if (id == R.id.nav_manage) {
 
