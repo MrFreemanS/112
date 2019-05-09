@@ -3,8 +3,7 @@ package ru.belgo.edds;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.net.Uri;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -108,12 +107,20 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.multiple_actions_left1).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+            public void onClick(View v) {
+                String dial = "tel:" + "112";
+                startActivity(new Intent(Intent.ACTION_DIAL, Uri.parse(dial)));
+            }
+        });
+        findViewById(R.id.multiple_actions_left2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent smsIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + "112"));
+                //TODO придумать тут текст
+                smsIntent.putExtra("sms_body","Надо подумать что сюда писать");
+                startActivity(smsIntent);
             }
         });
 
