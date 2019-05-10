@@ -38,29 +38,26 @@ public class MainActivity extends AppCompatActivity
     static final String news_url = "news_url";
     static final String news_date = "news_date";
     static final String news_preview = "news_preview";
+
     static final String server_ip = "192.168.1.82";
-    static final String nodejs_path = "http://"+server_ip+":3012";
-    //static final String KEY_URL = "url";
-    //static final String KEY_URLTOIMAGE = "urlToImage";
+    static final String port = ":3012";
+
+    static final String nodejs_path = "http://"+server_ip+port;
     static final String urlnews = nodejs_path+"/news/";
 
     class DownloadNews extends AsyncTask<String, Void, String> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-
         }
         protected String doInBackground(String... args) {
             String xml = "";
-            //TODO delete this
-           // String urlParameters = nodejs_path +"/news/";
             xml = Function.excuteGet(urlnews);
             return  xml;
         }
 
         @Override
         protected void onPostExecute(String xml) {
-
             if(xml.length()>0) // Just checking if not empty
             {
                 try
@@ -78,7 +75,8 @@ public class MainActivity extends AppCompatActivity
                          dataList.add(map);
                     }
                 } catch (JSONException e) {
-                    Toast.makeText(getApplicationContext(), "Unexpected error", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), R.string.json_error, Toast.LENGTH_SHORT).show();
+                    return;
                 }
 
                 ListNewsAdapter adapter = new ListNewsAdapter(MainActivity.this, dataList);
@@ -95,7 +93,7 @@ public class MainActivity extends AppCompatActivity
                 });
 
             }else{
-                Toast.makeText(getApplicationContext(), "No news found", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), R.string.news_found, Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -118,6 +116,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 Intent smsIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + "112"));
+
                 //TODO придумать тут текст
                 smsIntent.putExtra("sms_body","Надо подумать что сюда писать");
                 startActivity(smsIntent);
@@ -142,7 +141,7 @@ public class MainActivity extends AppCompatActivity
             DownloadNews newsTask = new DownloadNews();
             newsTask.execute();
         }else{
-            Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), R.string.no_connection, Toast.LENGTH_LONG).show();
         }
     }
 

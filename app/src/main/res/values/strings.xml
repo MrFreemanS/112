@@ -6,4 +6,7 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="action_settings">Настройки</string>
     <string name="incident_add">Добавить событие</string>
+    <string name="json_error">Ошибка передачи данных</string>
+    <string name="news_found">Новостей нет</string>
+    <string name="no_connection">Нет интернета</string>
 </resources>
