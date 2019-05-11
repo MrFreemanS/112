@@ -29,6 +29,53 @@ public class Function {
             //connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             connection.setRequestProperty("content-type", "application/json;  charset=utf-8");
 
+            connection.setRequestProperty("Content-Language", "en-US");
+
+            connection.setUseCaches (false);
+            connection.setDoInput(true);
+            connection.setDoOutput(false);
+
+            InputStream is;
+
+            int status = connection.getResponseCode();
+
+            if (status != HttpURLConnection.HTTP_OK)
+                is = connection.getErrorStream();
+            else
+                is = connection.getInputStream();
+
+
+            BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+            String line;
+            StringBuffer response = new StringBuffer();
+            while((line = rd.readLine()) != null) {
+                response.append(line);
+                response.append('\r');
+            }
+            rd.close();
+            return response.toString();
+
+        } catch (Exception e) {
+            return null;
+        } finally {
+            if(connection != null) {
+                connection.disconnect();
+            }
+        }
+    }
+
+
+    public static String excutePut(String targetURL)
+    {
+        URL url;
+        HttpURLConnection connection = null;
+        try {
+            //Create connection
+            url = new URL(targetURL);
+            connection = (HttpURLConnection)url.openConnection();
+            connection.setRequestMethod("PUT");
+            //connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            connection.setRequestProperty("content-type", "application/json;  charset=utf-8");
 
             connection.setRequestProperty("Content-Language", "en-US");
 
@@ -57,18 +104,11 @@ public class Function {
             return response.toString();
 
         } catch (Exception e) {
-
-
             return null;
-
         } finally {
-
             if(connection != null) {
                 connection.disconnect();
             }
         }
     }
-
-
-
 }
