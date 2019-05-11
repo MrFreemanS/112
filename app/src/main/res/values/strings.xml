@@ -9,4 +9,21 @@
     <string name="json_error">Ошибка передачи данных</string>
     <string name="news_found">Новостей нет</string>
     <string name="no_connection">Нет интернета</string>
+    <string name="message_subject">Тема сообщения</string>
+    <string name="address_value">Адрес</string>
+    <string name="enter_address">Введите адрес</string>
+    <string name="description_of_Incident">Описание проишествия</string>
+    <string name="describe_situation_in_detail">Подробно опишите ситуацию</string>
+    <string name="upload_image">Загрузить изображение</string>
+    <string name="value_ok">ОК</string>
+
+
+    <string-array name="catlist">
+        <item>Вызов скорой помощи</item>
+        <item>ДТП</item>
+        <item>Затопление</item>
+        <item>Пожар</item>
+        <item>Другие проишествия</item>
+    </string-array>
+
 </resources>
