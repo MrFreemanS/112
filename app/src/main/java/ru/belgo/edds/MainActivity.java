@@ -105,14 +105,14 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        findViewById(R.id.multiple_actions_left1).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.floatingactionbutton_actions_phone).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String dial = "tel:" + "112";
                 startActivity(new Intent(Intent.ACTION_DIAL, Uri.parse(dial)));
             }
         });
-        findViewById(R.id.multiple_actions_left2).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.floatingactionbutton_actions_message).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent smsIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + "112"));
@@ -120,6 +120,13 @@ public class MainActivity extends AppCompatActivity
                 //TODO придумать тут текст
                 smsIntent.putExtra("sms_body","Надо подумать что сюда писать");
                 startActivity(smsIntent);
+            }
+        });
+        findViewById(R.id.floatingactionbutton_actions_camera).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this, AddIncActivity.class);
+                startActivity(i);
             }
         });
 
