@@ -16,6 +16,12 @@
     <string name="describe_situation_in_detail">Подробно опишите ситуацию</string>
     <string name="upload_image">Загрузить изображение</string>
     <string name="value_ok">ОК</string>
+    <string name="account_sign_in">Войти</string>
+    <string name="account_sign_out">Выйти</string>
+    <string name="unautorized_header_name">Для добавления инцидента</string>
+    <string name="unautorized_header_email">нужно авторизироваться</string>
+    <string name="successful_authorization">Успешно авторизировались</string>
+    <string name="successful_unauthorization">Успешно деавторизировались</string>
 
 
     <string-array name="catlist">

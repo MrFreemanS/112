@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -22,6 +23,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -118,14 +120,23 @@ public class MainActivity extends AppCompatActivity
     private void updateUI(@Nullable GoogleSignInAccount account) {
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         View headerView = navigationView.getHeaderView(0);
-
+        Menu menu = navigationView.getMenu();
+        MenuItem sign_in_button = menu.findItem(R.id.nav_singInButton);
+        MenuItem sign_out_button = menu.findItem(R.id.nav_disconnect_button);
+        MenuItem incident_addbutton = menu.findItem(R.id.nav_incident_add);
 
         if (account != null) {
+            if (incident_addbutton !=null)
+                incident_addbutton.setVisible(true);
 
             String personName = account.getDisplayName();
+
             if (personName != null)
             {
+                Toast.makeText(getApplicationContext(), R.string.successful_authorization, Toast.LENGTH_SHORT).show();
+
                 TextView temptextView = (TextView) headerView.findViewById(R.id.header_name);
+                temptextView.setVisibility(View.VISIBLE);
                 temptextView.setText(personName);
             }
             Uri personPhoto = account.getPhotoUrl();
@@ -134,7 +145,7 @@ public class MainActivity extends AppCompatActivity
             {
                 Picasso.get()
                         .load(personPhoto)
-                        .resize(300, 200)
+                        .resize(300, 300)
                         .into(tempImageView);
             }
             else
@@ -144,17 +155,48 @@ public class MainActivity extends AppCompatActivity
             }
             String personEmail = account.getEmail();
             TextView temptextView = (TextView) findViewById(R.id.header_email);
+
             if ( personEmail != null && temptextView !=null )
             {
+                tempImageView.setVisibility(View.VISIBLE);
                 temptextView.setText(personEmail);
             }
+            if ( sign_in_button != null && sign_out_button !=null )
+            {
+                sign_in_button.setVisible(false);
+                sign_out_button.setVisible(true);
+            }
+            FloatingActionButton floating_Action_Button= findViewById(R.id.floatingactionbutton_actions_camera);
+            if (floating_Action_Button !=null)
+                floating_Action_Button.setVisibility(View.VISIBLE);
 
-            //    sign_in_button.setVisibility(View.GONE);
-            //sign_out_button.setVisibility(View.VISIBLE);
         }
         else {
-            //sign_in_button.setVisibility(View.VISIBLE);
-            //sign_out_button.setVisibility(View.GONE);
+            //Скрываем интерфейс
+
+            TextView temptextView = (TextView) findViewById(R.id.header_name);
+            TextView temptextView2 = (TextView) findViewById(R.id.header_email);
+            ImageView tempImageView = findViewById(R.id.header_imageView);
+
+            if (temptextView !=null && temptextView2 !=null && tempImageView != null)
+            {
+                temptextView.setText(getResources().getString(R.string.unautorized_header_name));
+                temptextView2.setText(getResources().getString(R.string.unautorized_header_email));
+                //temptextView.setVisibility(View.GONE);
+                //temptextView2.setVisibility(View.GONE);
+                tempImageView.setVisibility(View.GONE);
+            }
+            if ( sign_in_button != null && sign_out_button !=null )
+            {
+                sign_in_button.setVisible(true);
+                sign_out_button.setVisible(false);
+            }
+            if (incident_addbutton !=null)
+                incident_addbutton.setVisible(false);
+
+            FloatingActionButton floating_Action_Button= findViewById(R.id.floatingactionbutton_actions_camera);
+            if (floating_Action_Button !=null)
+                floating_Action_Button.setVisibility(View.GONE);
         }
     }
 
@@ -311,20 +353,24 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_incident_add) {
             Intent i = new Intent(MainActivity.this, AddIncActivity.class);
             startActivity(i);
         }
         else if (id == R.id.nav_settings) {
 
         }
-        else if (id == R.id.singInButton) {
+        else if (id == R.id.nav_singInButton) {
             signIn();
         }
-        else if (id == R.id.singOutButton) {
+        else
+            //Вообще тут кнопка деавторизации двух видов просто отключение и отключение с удалением данных
+            // https://developers.google.com/identity/sign-in/android/disconnect
+            // Кнопку с неполным откдюченим решил убрать
+            /*if (id == R.id.singOutButton) {
             signOut();
         }
-        else if (id == R.id.disconnect_button) {
+        else*/ if (id == R.id.nav_disconnect_button) {
             revokeAccess();
         }
 
