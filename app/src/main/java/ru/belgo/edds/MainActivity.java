@@ -4,6 +4,9 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,13 +16,25 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,6 +60,9 @@ public class MainActivity extends AppCompatActivity
     static final String nodejs_path = "http://"+server_ip+port;
     static final String urlnews = nodejs_path+"/news/";
 
+    private GoogleSignInClient mGoogleSignInClient;
+    private static final int RC_SIGN_IN = 9001;
+
     class DownloadNews extends AsyncTask<String, Void, String> {
         @Override
         protected void onPreExecute() {
@@ -65,14 +83,14 @@ public class MainActivity extends AppCompatActivity
                     JSONArray jsonArray = new JSONArray(xml);
                     for (int i = 0; i < jsonArray.length(); i++)
                     {
-                         JSONObject jsonObject = jsonArray.getJSONObject(i);
-                         HashMap<String, String> map = new HashMap<String, String>();
-                         map.put(news_preview, jsonObject.optString(news_preview).toString());
-                         map.put(news_title, jsonObject.optString(news_title).toString());
-                         map.put(news_desc, jsonObject.optString(news_desc).toString());
-                         map.put(news_url, nodejs_path+"/news/"+jsonObject.optString(news_id)+"/news_txt".toString());
-                         map.put(news_date, jsonObject.optString(news_date).toString());
-                         dataList.add(map);
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        HashMap<String, String> map = new HashMap<String, String>();
+                        map.put(news_preview, jsonObject.optString(news_preview).toString());
+                        map.put(news_title, jsonObject.optString(news_title).toString());
+                        map.put(news_desc, jsonObject.optString(news_desc).toString());
+                        map.put(news_url, nodejs_path+"/news/"+jsonObject.optString(news_id)+"/news_txt".toString());
+                        map.put(news_date, jsonObject.optString(news_date).toString());
+                        dataList.add(map);
                     }
                 } catch (JSONException e) {
                     Toast.makeText(getApplicationContext(), R.string.json_error, Toast.LENGTH_SHORT).show();
@@ -97,6 +115,61 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
+    private void updateUI(@Nullable GoogleSignInAccount account) {
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View headerView = navigationView.getHeaderView(0);
+
+
+        if (account != null) {
+
+            String personName = account.getDisplayName();
+            if (personName != null)
+            {
+                TextView temptextView = (TextView) headerView.findViewById(R.id.header_name);
+                temptextView.setText(personName);
+            }
+            Uri personPhoto = account.getPhotoUrl();
+            ImageView tempImageView = findViewById(R.id.header_imageView);
+            if ( personPhoto != null && tempImageView != null )
+            {
+                Picasso.get()
+                        .load(personPhoto)
+                        .resize(300, 200)
+                        .into(tempImageView);
+            }
+            else
+            {
+                if (tempImageView !=null)
+                    tempImageView.setVisibility(View.GONE);
+            }
+            String personEmail = account.getEmail();
+            TextView temptextView = (TextView) findViewById(R.id.header_email);
+            if ( personEmail != null && temptextView !=null )
+            {
+                temptextView.setText(personEmail);
+            }
+
+            //    sign_in_button.setVisibility(View.GONE);
+            //sign_out_button.setVisibility(View.VISIBLE);
+        }
+        else {
+            //sign_in_button.setVisibility(View.VISIBLE);
+            //sign_out_button.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // [START on_start_sign_in]
+        // Check for existing Google Sign In account, if the user is already signed in
+        // the GoogleSignInAccount will be non-null.
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        updateUI(account);
+        // [END on_start_sign_in]
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,6 +178,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //floatingactionbutton actions
         findViewById(R.id.floatingactionbutton_actions_phone).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -112,6 +186,7 @@ public class MainActivity extends AppCompatActivity
                 startActivity(new Intent(Intent.ACTION_DIAL, Uri.parse(dial)));
             }
         });
+
         findViewById(R.id.floatingactionbutton_actions_message).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -150,8 +225,39 @@ public class MainActivity extends AppCompatActivity
         }else{
             Toast.makeText(getApplicationContext(), R.string.no_connection, Toast.LENGTH_LONG).show();
         }
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            // The Task returned from this call is always completed, no need to attach
+            // a listener.
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            handleSignInResult(task);
+        }
+    }
+
+    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        try {
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+
+            // Signed in successfully, show authenticated UI.
+            updateUI(account);
+        } catch (ApiException e) {
+            // The ApiException status code indicates the detailed failure reason.
+            // Please refer to the GoogleSignInStatusCodes class reference for more information.
+            //Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
+            updateUI(null);
+        }
+    }
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -161,6 +267,43 @@ public class MainActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
+
+    // [START signIn]
+    private void signIn() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+    // [END signIn]
+
+    // [START signOut]
+    private void signOut() {
+        mGoogleSignInClient.signOut()
+                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        // [START_EXCLUDE]
+                        updateUI(null);
+                        // [END_EXCLUDE]
+                    }
+                });
+    }
+    // [END signOut]
+
+    // [START revokeAccess]
+    private void revokeAccess() {
+        mGoogleSignInClient.revokeAccess()
+                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        // [START_EXCLUDE]
+                        updateUI(null);
+                        // [END_EXCLUDE]
+                    }
+                });
+    }
+    // [END revokeAccess]
+
+
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -172,8 +315,17 @@ public class MainActivity extends AppCompatActivity
             Intent i = new Intent(MainActivity.this, AddIncActivity.class);
             startActivity(i);
         }
-         else if (id == R.id.nav_manage) {
+        else if (id == R.id.nav_settings) {
 
+        }
+        else if (id == R.id.singInButton) {
+            signIn();
+        }
+        else if (id == R.id.singOutButton) {
+            signOut();
+        }
+        else if (id == R.id.disconnect_button) {
+            revokeAccess();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

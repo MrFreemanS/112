@@ -2,8 +2,8 @@
     <string name="app_name">Служба 112 Белгород</string>
     <string name="navigation_drawer_open">Открыть навигационное меню</string>
     <string name="navigation_drawer_close">Закрыть навигационное меню</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_name">User Name</string>
+    <string name="nav_header_email">user.email@android.com</string>
     <string name="action_settings">Настройки</string>
     <string name="incident_add">Добавить событие</string>
     <string name="json_error">Ошибка передачи данных</string>
